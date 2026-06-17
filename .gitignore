@@ -1,0 +1,123 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.production.local
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+.next/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.sublime-workspace
+*.sublime-project
+.DS_Store
+Thumbs.db
+
+# Editor
+.editorconfig
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+jest-coverage/
+.jest-cache/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# IDE specific
+.vscode/settings.json
+.vscode/extensions.json
+.vscode/*.code-snippets
+.history/
+.ionide/
+
+# Webpack
+dist/
+/build
+
+# Misc
+.cache/
+.temp/
+tmp/
+temp/
+.tmp/
+.npm-cache/
+.playwright-browsers/
+
+# API Keys and secrets (security)
+secrets.json
+.env.*.secret
+credentials.json
+
+# Generated files
+.generated/
+generated/
+backend/**/*.js
+
+# Storybook
+storybook-static/
+
+# Playwright
+.playwright/
+
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
+prisma/migrations/dev/
+
+# Node
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Misc
+dist
+.env.local
+.env.production.local
+.env.test.local
+.env.development.local
+*.pem
+
+# Files
+*.bak
+*.backup
+*~

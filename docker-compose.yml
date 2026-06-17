@@ -1,0 +1,130 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: supportgpt_postgres
+    environment:
+      POSTGRES_USER: supportgpt
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: supportgpt_dev
+      POSTGRES_INITDB_ARGS: "-c log_statement=all"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - supportgpt
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U supportgpt"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: 
+      - "postgres"
+      - "-c"
+      - "pgcrypto"
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: supportgpt_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - supportgpt
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: redis-server --appendonly yes
+
+  # Backend API (Development)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: supportgpt_backend
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://supportgpt:devpassword@postgres:5432/supportgpt_dev
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: dev_secret_key_change_in_production
+      REFRESH_TOKEN_SECRET: refresh_secret_change_in_production
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-sk-mock}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      CORS_ORIGIN: http://localhost:3000
+      NODE_LOG_LEVEL: debug
+      PORT: 3000
+    ports:
+      - "3001:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - supportgpt
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - /app/dist
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend (Development)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: supportgpt_frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXT_PUBLIC_WS_URL: ws://localhost:3001
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - supportgpt
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Mail Testing (MailHog)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: supportgpt_mailhog
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI (http://localhost:8025)
+    networks:
+      - supportgpt
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  supportgpt:
+    driver: bridge
