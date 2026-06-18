@@ -19,6 +19,7 @@ It demonstrates the core product flows a paying support team would expect: authe
 - `docs/api-design.md` — API contract and endpoint map
 - `docs/interview-preparation.md` — detailed architecture decision walkthrough
 - `docs/deployment-guide.md` — local, Docker, and production deployment notes
+- `docs/proof.md` — screenshot and validation index
 
 ## Repository Layout
 
@@ -134,6 +135,29 @@ GitHub Actions workflows live in `.github/workflows/`:
 
 - `ci.yml` runs backend and frontend builds
 - `docker-build.yml` validates both Docker images
+
+## Proof
+
+These screenshots are committed with the repo so the project shows tangible evidence of the implemented UI and validation flow.
+
+### Landing Page
+
+![SupportGPT landing page](docs/screenshots/homepage.png)
+
+### Dashboard
+
+![SupportGPT dashboard](docs/screenshots/dashboard.png)
+
+### Validation Page
+
+![SupportGPT proof page](docs/screenshots/proof.png)
+
+### Validation Summary
+
+- Backend build passed
+- Backend smoke tests passed
+- Frontend production build passed
+- Screenshot captures were taken from the running app
 
 ## Current Build Status
 
